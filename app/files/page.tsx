@@ -1,65 +1,13 @@
 "use client";
 
+import type { FileItem } from "@/src/domain/entities/FileItem";
 import type { VpsServer } from "@/src/domain/entities/VpsServer";
-import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
+import { fileRepository, vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { IconButton } from "@/src/presentation/components/ui/IconButton";
 import { WindowPanel } from "@/src/presentation/components/ui/WindowPanel";
 import { animated, useSpring } from "@react-spring/web";
 import { useEffect, useState } from "react";
-
-interface FileItem {
-  id: string;
-  name: string;
-  type: "file" | "folder";
-  size?: number;
-  modified: string;
-  permissions: string;
-  owner: string;
-}
-
-// Mock file system data
-const mockFileSystem: Record<string, FileItem[]> = {
-  "/": [
-    { id: "1", name: "bin", type: "folder", modified: "2025-01-15", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "2", name: "etc", type: "folder", modified: "2025-01-20", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "3", name: "home", type: "folder", modified: "2025-01-28", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "4", name: "var", type: "folder", modified: "2025-02-01", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "5", name: "usr", type: "folder", modified: "2025-01-10", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "6", name: "tmp", type: "folder", modified: "2025-02-03", permissions: "drwxrwxrwt", owner: "root" },
-    { id: "7", name: "opt", type: "folder", modified: "2025-01-25", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "8", name: "root", type: "folder", modified: "2025-02-02", permissions: "drwx------", owner: "root" },
-  ],
-  "/home": [
-    { id: "h1", name: "admin", type: "folder", modified: "2025-02-01", permissions: "drwxr-xr-x", owner: "admin" },
-    { id: "h2", name: "www-data", type: "folder", modified: "2025-01-28", permissions: "drwxr-xr-x", owner: "www-data" },
-  ],
-  "/home/admin": [
-    { id: "a1", name: ".bashrc", type: "file", size: 3771, modified: "2025-01-15", permissions: "-rw-r--r--", owner: "admin" },
-    { id: "a2", name: ".profile", type: "file", size: 807, modified: "2025-01-15", permissions: "-rw-r--r--", owner: "admin" },
-    { id: "a3", name: "projects", type: "folder", modified: "2025-02-01", permissions: "drwxr-xr-x", owner: "admin" },
-    { id: "a4", name: "backups", type: "folder", modified: "2025-01-30", permissions: "drwxr-xr-x", owner: "admin" },
-    { id: "a5", name: "deploy.sh", type: "file", size: 2048, modified: "2025-02-02", permissions: "-rwxr-xr-x", owner: "admin" },
-  ],
-  "/var": [
-    { id: "v1", name: "log", type: "folder", modified: "2025-02-03", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "v2", name: "www", type: "folder", modified: "2025-02-01", permissions: "drwxr-xr-x", owner: "www-data" },
-    { id: "v3", name: "lib", type: "folder", modified: "2025-01-28", permissions: "drwxr-xr-x", owner: "root" },
-  ],
-  "/var/log": [
-    { id: "l1", name: "syslog", type: "file", size: 1048576, modified: "2025-02-03", permissions: "-rw-r-----", owner: "syslog" },
-    { id: "l2", name: "auth.log", type: "file", size: 524288, modified: "2025-02-03", permissions: "-rw-r-----", owner: "syslog" },
-    { id: "l3", name: "nginx", type: "folder", modified: "2025-02-03", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "l4", name: "mysql", type: "folder", modified: "2025-02-02", permissions: "drwxr-xr-x", owner: "mysql" },
-  ],
-  "/etc": [
-    { id: "e1", name: "nginx", type: "folder", modified: "2025-01-28", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "e2", name: "ssh", type: "folder", modified: "2025-01-20", permissions: "drwxr-xr-x", owner: "root" },
-    { id: "e3", name: "passwd", type: "file", size: 2048, modified: "2025-01-15", permissions: "-rw-r--r--", owner: "root" },
-    { id: "e4", name: "hosts", type: "file", size: 256, modified: "2025-01-10", permissions: "-rw-r--r--", owner: "root" },
-    { id: "e5", name: "crontab", type: "file", size: 722, modified: "2025-01-25", permissions: "-rw-r--r--", owner: "root" },
-  ],
-};
 
 export default function FilesPage() {
   const [servers, setServers] = useState<VpsServer[]>([]);
@@ -68,6 +16,7 @@ export default function FilesPage() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadServers = async () => {
@@ -80,11 +29,22 @@ export default function FilesPage() {
   }, []);
 
   useEffect(() => {
-    // Load files for current path
-    const pathFiles = mockFileSystem[currentPath] || [];
-    setFiles(pathFiles);
+    const loadFiles = async () => {
+      if (!selectedServer) return;
+      setLoading(true);
+      try {
+        const data = await fileRepository.listDirectory(selectedServer.id, currentPath);
+        setFiles(data);
+      } catch (error) {
+        console.error("Error loading files:", error);
+        setFiles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadFiles();
     setSelectedFile(null);
-  }, [currentPath]);
+  }, [currentPath, selectedServer]);
 
   const navigateTo = (path: string) => {
     setCurrentPath(path);
@@ -99,8 +59,7 @@ export default function FilesPage() {
 
   const handleFileClick = (file: FileItem) => {
     if (file.type === "folder") {
-      const newPath = currentPath === "/" ? `/${file.name}` : `${currentPath}/${file.name}`;
-      navigateTo(newPath);
+      navigateTo(file.path);
     } else {
       setSelectedFile(file);
     }
@@ -230,7 +189,12 @@ export default function FilesPage() {
 
           {/* File List */}
           <WindowPanel title={`${currentPath} (${files.length} items)`}>
-            {files.length === 0 ? (
+            {loading ? (
+              <div className="py-20 flex flex-col items-center justify-center space-y-4">
+                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                <p className="text-muted animate-pulse">Fetching remote file system...</p>
+              </div>
+            ) : files.length === 0 ? (
               <div className="py-12 text-center">
                 <div className="text-4xl mb-2">📂</div>
                 <p className="text-muted">This folder is empty</p>
