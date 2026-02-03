@@ -17,4 +17,14 @@ export class ApiFileRepository implements IFileRepository {
     }
     return res.json();
   }
+
+  async getFileContent(serverId: string, path: string): Promise<string> {
+    const res = await fetch(`${this.baseUrl}/content?serverId=${serverId}&path=${encodeURIComponent(path)}`);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Failed to fetch file content');
+    }
+    const data = await res.json();
+    return data.content;
+  }
 }

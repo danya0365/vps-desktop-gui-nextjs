@@ -62,6 +62,13 @@ export class FilesPresenter {
   }
 
   /**
+   * Get file content
+   */
+  async getFileContent(serverId: string, path: string): Promise<string> {
+    return this.fileRepository.getFileContent(serverId, path);
+  }
+
+  /**
    * Generate page metadata
    */
   generateMetadata(): Metadata {

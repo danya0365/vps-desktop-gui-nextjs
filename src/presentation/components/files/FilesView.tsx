@@ -12,6 +12,7 @@ import { FilesViewModel } from '@/src/presentation/presenters/files/FilesPresent
 import { useFilesPresenter } from '@/src/presentation/presenters/files/useFilesPresenter';
 import { animated, useSpring } from '@react-spring/web';
 import React from 'react';
+import { FileContentViewer } from './FileContentViewer';
 
 interface FilesViewProps {
   initialViewModel: FilesViewModel;
@@ -210,9 +211,17 @@ export const FilesView: React.FC<FilesViewProps> = ({ initialViewModel }) => {
 
                     <div className="flex flex-col gap-2 pt-4">
                       {selectedFile.type === 'file' && (
-                        <button className="bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-md transform active:scale-95 shadow-primary/20">
-                          Download File
-                        </button>
+                        <>
+                          <button 
+                            onClick={() => actions.viewFileContent(selectedFile)}
+                            className="bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-md transform active:scale-95 shadow-primary/20"
+                          >
+                            View Content
+                          </button>
+                          <button className="bg-muted hover:bg-muted/80 py-2.5 rounded-lg text-sm font-semibold transition-all transform active:scale-95 border border-border/50">
+                            Download File
+                          </button>
+                        </>
                       )}
                       <button className="bg-muted hover:bg-muted/80 py-2.5 rounded-lg text-sm font-semibold transition-all transform active:scale-95 border border-border/50">
                         Rename Item
@@ -233,6 +242,15 @@ export const FilesView: React.FC<FilesViewProps> = ({ initialViewModel }) => {
           </div>
         </div>
       </animated.div>
+
+      {state.isContentViewerOpen && selectedFile && (
+        <FileContentViewer 
+          file={selectedFile}
+          content={state.fileContent}
+          loading={loading}
+          onClose={actions.closeContentViewer}
+        />
+      )}
     </div>
   );
 };

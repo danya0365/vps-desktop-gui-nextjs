@@ -16,6 +16,8 @@ export interface FilesPresenterState {
   loading: boolean;
   error: string | null;
   selectedFile: FileItem | null;
+  fileContent: string | null;
+  isContentViewerOpen: boolean;
   viewMode: 'grid' | 'list';
 }
 
@@ -23,6 +25,8 @@ export interface FilesPresenterActions {
   navigateTo: (path: string) => Promise<void>;
   navigateUp: () => Promise<void>;
   handleFileClick: (file: FileItem) => Promise<void>;
+  viewFileContent: (file: FileItem) => Promise<void>;
+  closeContentViewer: () => void;
   setSelectedServer: (server: VpsServer) => Promise<void>;
   setViewMode: (mode: 'grid' | 'list') => void;
   setSelectedFile: (file: FileItem | null) => void;
@@ -43,6 +47,8 @@ export function useFilesPresenter(
     loading: false,
     error: null,
     selectedFile: null,
+    fileContent: null,
+    isContentViewerOpen: false,
     viewMode: 'list'
   });
 
@@ -90,6 +96,25 @@ export function useFilesPresenter(
     }
   }, [navigateTo]);
 
+  const viewFileContent = useCallback(async (file: FileItem) => {
+    if (!state.viewModel.selectedServer) return;
+    setState(s => ({ ...s, loading: true, error: null, isContentViewerOpen: true }));
+    try {
+      const content = await presenter.getFileContent(state.viewModel.selectedServer.id, file.path);
+      if (isMountedRef.current) {
+        setState(s => ({ ...s, fileContent: content, selectedFile: file, loading: false }));
+      }
+    } catch (err: any) {
+      if (isMountedRef.current) {
+        setState(s => ({ ...s, loading: false, error: err.message }));
+      }
+    }
+  }, [presenter, state.viewModel.selectedServer]);
+
+  const closeContentViewer = useCallback(() => {
+    setState(s => ({ ...s, isContentViewerOpen: false, fileContent: null }));
+  }, []);
+
   const setSelectedServer = useCallback(async (server: VpsServer) => {
     await updateViewModel(server.id, '/');
     setState(s => ({ ...s, selectedFile: null }));
@@ -112,11 +137,13 @@ export function useFilesPresenter(
     navigateTo,
     navigateUp,
     handleFileClick,
+    viewFileContent,
+    closeContentViewer,
     setSelectedServer,
     setViewMode,
     setSelectedFile,
     refresh
-  }), [navigateTo, navigateUp, handleFileClick, setSelectedServer, setViewMode, setSelectedFile, refresh]);
+  }), [navigateTo, navigateUp, handleFileClick, viewFileContent, closeContentViewer, setSelectedServer, setViewMode, setSelectedFile, refresh]);
 
   return [state, actions];
 }

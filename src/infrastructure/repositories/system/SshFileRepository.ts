@@ -65,6 +65,19 @@ export class SshFileRepository implements IFileRepository {
     }
   }
 
+  async getFileContent(serverId: string, path: string): Promise<string> {
+    try {
+      const cleanPath = path.replace(/[;&|]/g, '');
+      // Use head to limit reading to first 1MB roughly (10000 lines approx)
+      const command = `head -c 1048576 "${cleanPath}"`;
+      const output = await this.executeCommand(command);
+      return output;
+    } catch (error) {
+      console.error('Error fetching file content via SSH:', error);
+      throw error;
+    }
+  }
+
   private parseLsOutput(output: string, parentPath: string): FileItem[] {
     const lines = output.split('\n');
     const items: FileItem[] = [];

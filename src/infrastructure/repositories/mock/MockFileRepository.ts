@@ -27,4 +27,18 @@ export class MockFileRepository implements IFileRepository {
     await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
     return this.mockData[path] || [];
   }
+
+  async getFileContent(serverId: string, path: string): Promise<string> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    if (path === '/home/admin/.bashrc') {
+      return `# .bashrc\n\n# User specific aliases and functions\nalias ll='ls -al'\nalias l='ls -CF'\n\n# Source global definitions\nif [ -f /etc/bashrc ]; then\n\t. /etc/bashrc\nfi`;
+    }
+    
+    if (path === '/home/admin/deploy.sh') {
+      return `#!/bin/bash\n\necho "Starting deployment..."\nnpm install\nnpm run build\npm2 restart all\necho "Deployment finished!"`;
+    }
+
+    return `// Content for ${path}\n// This is a mock file content.`;
+  }
 }
