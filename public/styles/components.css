@@ -1,5 +1,137 @@
 @layer base {
-  /* Animation classes */
+  /* ========================================
+   * MACOS WINDOW & CHROME STYLES
+   * ======================================== */
+
+  /* Window Frame */
+  .macos-window {
+    @apply rounded-[10px] overflow-hidden;
+    box-shadow: var(--window-shadow);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* Window Title Bar */
+  .macos-titlebar {
+    height: var(--window-header-height);
+    background: var(--color-window-chrome);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--color-border-light);
+    @apply flex items-center px-4;
+  }
+
+  /* Traffic Light Buttons */
+  .traffic-lights {
+    @apply flex items-center gap-2;
+  }
+
+  .traffic-light {
+    @apply w-3 h-3 rounded-full cursor-pointer transition-all duration-150;
+  }
+
+  .traffic-light-close {
+    background: var(--color-traffic-red);
+  }
+  .traffic-light-close:hover {
+    background: var(--color-traffic-red-hover);
+  }
+
+  .traffic-light-minimize {
+    background: var(--color-traffic-yellow);
+  }
+  .traffic-light-minimize:hover {
+    background: var(--color-traffic-yellow-hover);
+  }
+
+  .traffic-light-maximize {
+    background: var(--color-traffic-green);
+  }
+  .traffic-light-maximize:hover {
+    background: var(--color-traffic-green-hover);
+  }
+
+  /* Traffic lights inactive state */
+  .traffic-lights-inactive .traffic-light {
+    @apply bg-gray-400 dark:bg-gray-600;
+  }
+
+  /* ========================================
+   * GLASSMORPHISM COMPONENTS
+   * ======================================== */
+
+  .glass-panel {
+    background: rgba(255, 255, 255, var(--glass-opacity));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    @apply rounded-xl;
+  }
+
+  .dark .glass-panel {
+    background: rgba(44, 44, 46, var(--glass-opacity));
+  }
+
+  /* Glass Card with hover effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    @apply rounded-2xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .dark .glass-card {
+    background: rgba(44, 44, 46, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .glass-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ========================================
+   * DOCK STYLES
+   * ======================================== */
+
+  .macos-dock {
+    background: var(--dock-bg);
+    backdrop-filter: blur(var(--dock-blur));
+    -webkit-backdrop-filter: blur(var(--dock-blur));
+    border: 1px solid var(--dock-border);
+    box-shadow: var(--dock-shadow);
+    @apply rounded-2xl flex items-center gap-1 px-2 py-1.5;
+  }
+
+  .dock-item {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200;
+  }
+
+  .dock-item:hover {
+    transform: translateY(-8px) scale(1.15);
+  }
+
+  .dock-item-active {
+    @apply relative;
+  }
+
+  .dock-item-active::after {
+    content: '';
+    @apply absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full;
+    background: var(--color-primary);
+  }
+
+  /* ========================================
+   * ANIMATIONS
+   * ======================================== */
+
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -33,6 +165,15 @@
     }
   }
 
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px 5px rgba(0, 122, 255, 0.2);
+    }
+  }
+
   @keyframes shimmer {
     0% {
       background-position: -200% 0;
@@ -42,12 +183,23 @@
     }
   }
 
-  @keyframes pulse-glow {
+  @keyframes status-pulse {
     0%, 100% {
-      box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+      opacity: 1;
+      transform: scale(1);
     }
     50% {
-      box-shadow: 0 0 20px 5px rgba(5, 150, 105, 0.2);
+      opacity: 0.7;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes dock-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
     }
   }
 
@@ -63,102 +215,158 @@
     animation: scale-in 0.3s ease-out;
   }
 
+  .animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+
   .animate-shimmer {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.15) 50%,
       transparent 100%
     );
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s infinite;
+  .animate-status-pulse {
+    animation: status-pulse 2s infinite;
   }
 
-  /* Islamic Geometric Pattern Background */
-  .islamic-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23059669' fill-opacity='0.04'%3E%3Cpath d='M40 0L0 40l40 40 40-40L40 0zm0 10l30 30-30 30-30-30 30-30z'/%3E%3C/g%3E%3C/svg%3E");
+  .animate-dock-bounce {
+    animation: dock-bounce 0.5s ease-in-out;
   }
 
-  .dark .islamic-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%2310b981' fill-opacity='0.06'%3E%3Cpath d='M40 0L0 40l40 40 40-40L40 0zm0 10l30 30-30 30-30-30 30-30z'/%3E%3C/g%3E%3C/svg%3E");
+  /* ========================================
+   * STATUS INDICATORS
+   * ======================================== */
+
+  .status-indicator {
+    @apply w-2.5 h-2.5 rounded-full;
   }
 
-  /* Star Pattern (Islamic 8-point star) */
-  .star-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%23C9A84C' fill-opacity='0.05'%3E%3Cpath d='M30 0l6.18 23.82L60 30l-23.82 6.18L30 60l-6.18-23.82L0 30l23.82-6.18z'/%3E%3C/g%3E%3C/svg%3E");
+  .status-online {
+    background: var(--color-online);
+    box-shadow: 0 0 8px var(--color-online);
   }
 
-  .dark .star-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%23E5C76B' fill-opacity='0.04'%3E%3Cpath d='M30 0l6.18 23.82L60 30l-23.82 6.18L30 60l-6.18-23.82L0 30l23.82-6.18z'/%3E%3C/g%3E%3C/svg%3E");
+  .status-offline {
+    background: var(--color-offline);
   }
 
-  /* Gradient backgrounds */
-  .bg-islamic-gradient {
-    background: linear-gradient(
-      135deg,
-      var(--color-primary-50) 0%,
-      var(--color-background) 50%,
-      var(--color-surface-warm) 100%
-    );
+  .status-maintenance {
+    background: var(--color-maintenance);
+    box-shadow: 0 0 8px var(--color-maintenance);
   }
 
-  .dark .bg-islamic-gradient {
-    background: linear-gradient(
-      135deg,
-      var(--color-gray-900) 0%,
-      var(--color-background) 50%,
-      var(--color-surface) 100%
-    );
+  .status-error {
+    background: var(--color-server-error);
+    box-shadow: 0 0 8px var(--color-server-error);
+    animation: status-pulse 1.5s infinite;
   }
 
-  /* Gold gradient text */
-  .text-gold-gradient {
-    background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold), var(--color-gold-dark));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* ========================================
+   * BUTTONS
+   * ======================================== */
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    background: var(--color-primary);
+    color: white;
   }
 
-  /* Emerald gradient text */
-  .text-emerald-gradient {
+  .btn-primary:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    background: var(--color-gray-200);
+    color: var(--color-foreground);
+  }
+
+  .dark .btn-secondary {
+    background: var(--color-gray-300);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-gray-300);
+  }
+
+  .dark .btn-secondary:hover {
+    background: var(--color-gray-400);
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 bg-transparent;
+    color: var(--color-foreground);
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-gray-100);
+  }
+
+  .dark .btn-ghost:hover {
+    background: var(--color-gray-200);
+  }
+
+  /* ========================================
+   * GRADIENT TEXTS
+   * ======================================== */
+
+  .text-gradient-primary {
     background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary), var(--color-primary-dark));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Card styles */
-  .card-glass {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  .text-gradient-secondary {
+    background: linear-gradient(135deg, var(--color-secondary-light), var(--color-secondary), var(--color-secondary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .dark .card-glass {
-    background: rgba(26, 31, 53, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  /* ========================================
+   * SCROLLBAR
+   * ======================================== */
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 
-  /* Arabic text styling */
-  .arabic-text {
-    font-family: var(--font-arabic), serif;
-    direction: rtl;
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  /* Severity badges */
-  .badge-basic {
-    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: 4px;
   }
 
-  .badge-intermediate {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
   }
 
-  .badge-advanced {
-    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

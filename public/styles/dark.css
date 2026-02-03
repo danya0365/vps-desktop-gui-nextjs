@@ -1,79 +1,89 @@
-/* Dark Mode - Islamic Night Theme */
+/* Dark Mode - macOS Sonoma Dark */
 @layer base {
   .dark {
-    /* Deep night blue - like the night sky over the desert */
-    --color-background: #0C1222;
-    --color-foreground: #F5F5F4;
-    --color-surface: #1A1F35;
+    /* Deep dark background - macOS dark mode */
+    --color-background: #1C1C1E;
+    --color-foreground: #F5F5F7;
+    --color-surface: #2C2C2E;
     --color-on-surface: #FFFFFF;
-    --color-surface-warm: #1E2438;
+    --color-surface-elevated: #3A3A3C;
+    --color-window-chrome: rgba(44, 44, 46, 0.78);
 
-    /* Primary - Lighter emerald for dark mode */
-    --color-primary: #10b981;
-    --color-primary-light: #34d399;
-    --color-primary-dark: #059669;
+    /* Primary - Brighter blue for dark mode */
+    --color-primary: #0A84FF;
+    --color-primary-light: #409CFF;
+    --color-primary-dark: #0062CC;
 
-    /* Secondary - Brighter gold for dark mode */
-    --color-secondary: #E5C76B;
-    --color-secondary-light: #F0D98A;
-    --color-secondary-dark: #C9A84C;
-    --color-gold: #E5C76B;
-    --color-gold-light: #F0D98A;
-    --color-gold-dark: #C9A84C;
+    /* Secondary - Brighter purple for dark mode */
+    --color-secondary: #BF5AF2;
+    --color-secondary-light: #DA8FFF;
+    --color-secondary-dark: #9935D9;
 
     /* Accent */
-    --color-accent: #3B82F6;
-    --color-accent-light: #60A5FA;
-    --color-accent-dark: #2563EB;
+    --color-accent: #5E5CE6;
+    --color-accent-light: #8482F0;
+    --color-accent-dark: #4A47D6;
 
     /* Status colors for dark mode */
-    --color-success: #34d399;
-    --color-success-light: #065f46;
-    --color-success-dark: #34d399;
-    --color-warning: #fbbf24;
-    --color-warning-light: #92400e;
-    --color-warning-dark: #fbbf24;
-    --color-error: #f87171;
-    --color-error-light: #991b1b;
-    --color-error-dark: #f87171;
-    --color-info: #60a5fa;
-    --color-info-light: #1e3a8a;
-    --color-info-dark: #60a5fa;
+    --color-success: #30D158;
+    --color-success-light: #1E3D27;
+    --color-success-dark: #30D158;
+    --color-warning: #FF9F0A;
+    --color-warning-light: #3D2E10;
+    --color-warning-dark: #FF9F0A;
+    --color-error: #FF453A;
+    --color-error-light: #3D1418;
+    --color-error-dark: #FF453A;
+    --color-info: #64D2FF;
+    --color-info-light: #1A3340;
+    --color-info-dark: #64D2FF;
 
-    /* Severity Level Colors - Dark mode */
-    --color-basic: #34d399;
-    --color-intermediate: #fbbf24;
-    --color-advanced: #f87171;
+    /* Server Status Colors - Dark mode */
+    --color-online: #30D158;
+    --color-offline: #98989D;
+    --color-maintenance: #FF9F0A;
+    --color-server-error: #FF453A;
 
     /* UI Colors - Dark mode */
-    --color-muted: #9CA3AF;
-    --color-muted-light: #1E2438;
-    --color-muted-dark: #D1D5DB;
-    --color-border: #2D3348;
-    --color-border-light: #1E2438;
-    --color-border-dark: #4B5563;
+    --color-muted: #98989D;
+    --color-muted-light: #2C2C2E;
+    --color-muted-dark: #AEAEB2;
+    --color-border: #38383A;
+    --color-border-light: #2C2C2E;
+    --color-border-dark: #48484A;
 
     /* Input colors (dark mode) */
-    --color-input: #2D3348;
-    --color-input-bg: #1A1F35;
-    --color-input-focus: #252B42;
-    --color-input-placeholder: #6B7280;
-    --color-input-border: #2D3348;
+    --color-input: #38383A;
+    --color-input-bg: #2C2C2E;
+    --color-input-focus: #0A84FF;
+    --color-input-placeholder: #636366;
+    --color-input-border: #38383A;
 
     /* Gray scale - Dark mode */
-    --color-gray-50: #1A1F35;
-    --color-gray-100: #1E2438;
-    --color-gray-200: #252B42;
-    --color-gray-300: #2D3348;
-    --color-gray-400: #4B5563;
-    --color-gray-500: #6B7280;
-    --color-gray-600: #9CA3AF;
-    --color-gray-700: #D1D5DB;
-    --color-gray-800: #E5E7EB;
-    --color-gray-900: #F3F4F6;
+    --color-gray-50: #1C1C1E;
+    --color-gray-100: #2C2C2E;
+    --color-gray-200: #38383A;
+    --color-gray-300: #48484A;
+    --color-gray-400: #636366;
+    --color-gray-500: #8E8E93;
+    --color-gray-600: #98989D;
+    --color-gray-700: #AEAEB2;
+    --color-gray-800: #C7C7CC;
+    --color-gray-900: #F5F5F7;
 
-    /* Islamic Pattern Colors - Dark mode */
-    --color-pattern-primary: rgba(16, 185, 129, 0.08);
-    --color-pattern-secondary: rgba(229, 199, 107, 0.06);
+    /* Glassmorphism - Dark mode */
+    --glass-blur: 20px;
+    --glass-opacity: 0.65;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+
+    /* Dock Styling - Dark mode */
+    --dock-bg: rgba(40, 40, 42, 0.7);
+    --dock-blur: 30px;
+    --dock-border: rgba(255, 255, 255, 0.1);
+    --dock-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+
+    /* Window Styling - Dark mode */
+    --window-shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
   }
 }

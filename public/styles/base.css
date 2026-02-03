@@ -1,76 +1,77 @@
 @layer base {
-  /* Base styles */
-
-  /* Custom Scrollbar */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 3px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-  }
-
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #4a5568;
-  }
-
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #718096;
-  }
-
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  /* Base styles for macOS aesthetic */
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Card animation utilities */
-  @keyframes card-deal {
-    from {
-      opacity: 0;
-      transform: translateY(-20px) rotate(-10deg);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) rotate(0);
-    }
+  /* Selection styling */
+  ::selection {
+    background: var(--color-primary);
+    color: white;
   }
 
-  .animate-card-deal {
-    animation: card-deal 0.3s ease-out forwards;
+  /* Focus outline - macOS style */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 
-  /* Pulse animation for turn indicator */
-  @keyframes pulse-ring {
-    0% {
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-    }
+  /* Link styling */
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
   }
 
-  .animate-pulse-ring {
-    animation: pulse-ring 1.5s infinite;
+  a:hover {
+    color: var(--color-primary-dark);
+  }
+
+  /* Heading typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  h1 {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl lg:text-2xl;
+  }
+
+  /* Code styling */
+  code, pre {
+    font-family: var(--font-mono);
+    @apply text-sm;
+  }
+
+  code {
+    @apply px-1.5 py-0.5 rounded;
+    background: var(--color-gray-100);
+  }
+
+  .dark code {
+    background: var(--color-gray-200);
+  }
+
+  pre {
+    @apply p-4 rounded-xl overflow-x-auto;
+    background: var(--color-gray-900);
+    color: var(--color-gray-50);
+  }
+
+  .dark pre {
+    background: var(--color-gray-100);
   }
 }
