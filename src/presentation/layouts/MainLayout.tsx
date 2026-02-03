@@ -26,9 +26,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-50/30 via-background to-secondary/5 dark:from-gray-900 dark:via-background dark:to-primary/5 pointer-events-none" />
-      
+
       {/* Noise texture overlay */}
       <div 
         className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03] pointer-events-none"
