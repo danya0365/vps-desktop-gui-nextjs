@@ -1,7 +1,7 @@
 "use client";
 
 import type { VpsServer } from "@/src/domain/entities/VpsServer";
-import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
+import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { animated, useSpring } from "@react-spring/web";
 import { useEffect, useRef, useState } from "react";
@@ -84,7 +84,7 @@ export default function TerminalPage() {
 
   useEffect(() => {
     const loadServers = async () => {
-      const data = await mockVpsServerRepository.getAll();
+      const data = await vpsServerRepository.getAll();
       setServers(data);
       const online = data.find((s) => s.status === "online");
       if (online) setSelectedServer(online);

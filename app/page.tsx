@@ -1,7 +1,7 @@
 "use client";
 
 import type { ServerStats, VpsServer } from "@/src/domain/entities/VpsServer";
-import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
+import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { StatusIndicator } from "@/src/presentation/components/ui/StatusIndicator";
 import { WindowPanel } from "@/src/presentation/components/ui/WindowPanel";
@@ -17,8 +17,8 @@ export default function HomePage() {
   useEffect(() => {
     const loadData = async () => {
       const [serversData, statsData] = await Promise.all([
-        mockVpsServerRepository.getAll(),
-        mockVpsServerRepository.getStats(),
+        vpsServerRepository.getAll(),
+        vpsServerRepository.getStats(),
       ]);
       setServers(serversData);
       setStats(statsData);

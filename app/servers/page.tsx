@@ -1,7 +1,7 @@
 "use client";
 
 import type { ServerOS, VpsServer } from "@/src/domain/entities/VpsServer";
-import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
+import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { IconButton } from "@/src/presentation/components/ui/IconButton";
 import { StatusIndicator } from "@/src/presentation/components/ui/StatusIndicator";
@@ -22,7 +22,7 @@ export default function ServersPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      const serversData = await mockVpsServerRepository.getAll();
+      const serversData = await vpsServerRepository.getAll();
       setServers(serversData);
       setFilteredServers(serversData);
       setLoading(false);

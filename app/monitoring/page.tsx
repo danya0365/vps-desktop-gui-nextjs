@@ -1,7 +1,7 @@
 "use client";
 
 import type { ServerStats, VpsServer } from "@/src/domain/entities/VpsServer";
-import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
+import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { WindowPanel } from "@/src/presentation/components/ui/WindowPanel";
 import { animated, useSpring } from "@react-spring/web";
@@ -16,8 +16,8 @@ export default function MonitoringPage() {
   useEffect(() => {
     const loadData = async () => {
       const [serversData, statsData] = await Promise.all([
-        mockVpsServerRepository.getAll(),
-        mockVpsServerRepository.getStats(),
+        vpsServerRepository.getAll(),
+        vpsServerRepository.getStats(),
       ]);
       setServers(serversData);
       setStats(statsData);
@@ -29,7 +29,7 @@ export default function MonitoringPage() {
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(async () => {
-      const serversData = await mockVpsServerRepository.getAll();
+      const serversData = await vpsServerRepository.getAll();
       // Simulate slight variations in metrics
       const updated = serversData.map((s) => ({
         ...s,

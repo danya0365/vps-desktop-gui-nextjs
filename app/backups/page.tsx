@@ -1,7 +1,7 @@
 "use client";
 
 import type { VpsServer } from "@/src/domain/entities/VpsServer";
-import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
+import { vpsServerRepository } from "@/src/infrastructure/repositories/VpsRepositoryFactory";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { IconButton } from "@/src/presentation/components/ui/IconButton";
 import { WindowPanel } from "@/src/presentation/components/ui/WindowPanel";
@@ -37,7 +37,7 @@ export default function BackupsPage() {
 
   useEffect(() => {
     const loadServers = async () => {
-      const data = await mockVpsServerRepository.getAll();
+      const data = await vpsServerRepository.getAll();
       setServers(data);
       const online = data.find((s) => s.status === "online");
       if (online) setSelectedServer(online);
