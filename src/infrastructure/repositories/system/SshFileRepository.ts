@@ -68,7 +68,19 @@ export class SshFileRepository implements IFileRepository {
   async getFileContent(serverId: string, path: string): Promise<string> {
     try {
       const cleanPath = path.replace(/[;&|]/g, '');
-      // Use head to limit reading to first 1MB roughly (10000 lines approx)
+      const ext = path.split('.').pop()?.toLowerCase();
+      const isImage = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico'].includes(ext || '');
+
+      if (isImage) {
+        // Read file as base64 for images
+        // We use -w 0 to prevent line wrapping which can break data URIs
+        const command = `cat "${cleanPath}" | base64 -w 0 || cat "${cleanPath}" | base64`;
+        const output = await this.executeCommand(command);
+        // Remove any remaining newlines or spaces
+        return output.replace(/\s/g, '');
+      }
+
+      // Use head to limit reading to first 1MB for text
       const command = `head -c 1048576 "${cleanPath}"`;
       const output = await this.executeCommand(command);
       return output;

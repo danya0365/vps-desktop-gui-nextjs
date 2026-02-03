@@ -36,6 +36,18 @@ export default async function FileViewPage({ searchParams }: PageProps) {
   const presenter = createServerFilesPresenter();
 
   try {
+    const ext = path.split('.').pop()?.toLowerCase();
+    const isImage = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico'].includes(ext || '');
+    const mimeTypes: Record<string, string> = {
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      'svg': 'image/svg+xml',
+      'webp': 'image/webp',
+      'ico': 'image/x-icon'
+    };
+
     const content = await presenter.getFileContent(serverId, path);
     const fileName = path.split('/').pop() || 'Unknown';
 
@@ -43,9 +55,11 @@ export default async function FileViewPage({ searchParams }: PageProps) {
       <FileContentView 
         fileName={fileName}
         filePath={path}
-        fileSize={null} // Ideally we'd get this from FileItem metadata, but for now null is fine
+        fileSize={null}
         content={content}
         serverId={serverId}
+        isImage={isImage}
+        mimeType={isImage ? mimeTypes[ext!] : 'text/plain'}
       />
     );
   } catch (error) {

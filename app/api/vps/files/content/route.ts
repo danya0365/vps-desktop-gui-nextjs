@@ -13,8 +13,24 @@ export async function GET(request: Request) {
   const repo = new SshFileRepository();
 
   try {
+    const ext = path.split('.').pop()?.toLowerCase();
+    const isImage = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico'].includes(ext || '');
+    const mimeTypes: Record<string, string> = {
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      'svg': 'image/svg+xml',
+      'webp': 'image/webp',
+      'ico': 'image/x-icon'
+    };
+
     const content = await repo.getFileContent(serverId, path);
-    return NextResponse.json({ content });
+    return NextResponse.json({ 
+      content, 
+      isImage,
+      mimeType: isImage ? mimeTypes[ext!] : 'text/plain'
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -16,6 +16,8 @@ interface FileContentViewProps {
   fileSize: number | null;
   content: string;
   serverId: string;
+  isImage?: boolean;
+  mimeType?: string;
 }
 
 export const FileContentView: React.FC<FileContentViewProps> = ({
@@ -23,7 +25,9 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
   filePath,
   fileSize,
   content,
-  serverId
+  serverId,
+  isImage,
+  mimeType
 }) => {
   const fadeIn = useSpring({
     from: { opacity: 0, transform: 'translateY(10px)' },
@@ -32,9 +36,9 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
 
   return (
     <div className="p-6 max-w-7xl mx-auto h-[calc(100vh-80px)] flex flex-col space-y-4">
-      <animated.div style={fadeIn} className="flex flex-col h-full">
+      <animated.div style={fadeIn} className="flex flex-col h-full min-h-0">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 shrink-0">
           <div className="flex items-center gap-4">
             <Link href="/files" className="hover:scale-110 transition-transform">
               <IconButton label="Back">
@@ -53,7 +57,7 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
                 <p className="text-sm font-mono text-primary/80">{serverId}</p>
              </div>
              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">
-               📄
+               {isImage ? '🖼️' : '📄'}
              </div>
           </div>
         </div>
@@ -62,15 +66,36 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
         <div className="flex-1 flex flex-col bg-card border border-border rounded-3xl overflow-hidden shadow-2xl min-h-0">
           <div className="bg-muted/50 px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <span className="text-xl">📄</span>
-              <h3 className="font-bold text-foreground truncate max-w-[400px]">File Content: {fileName}</h3>
+              <span className="text-xl">{isImage ? '🖼️' : '📄'}</span>
+              <h3 className="font-bold text-foreground truncate max-w-[400px]">
+                {isImage ? 'Image Preview' : 'File Content'}: {fileName}
+              </h3>
             </div>
           </div>
           
-          <div className="flex-1 overflow-auto bg-gray-950 p-6 md:p-8 font-mono text-sm leading-relaxed text-gray-300 custom-scrollbar">
-             <pre className="whitespace-pre-wrap break-all selection:bg-primary/30">
-                {content}
-             </pre>
+          <div 
+            className={`flex-1 overflow-auto ${isImage ? 'flex items-center justify-center p-12' : 'bg-gray-950 p-6 md:p-8 font-mono text-sm leading-relaxed text-gray-300 custom-scrollbar'}`}
+            style={isImage ? {
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%), linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%)',
+              backgroundSize: '20px 20px',
+              backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+            } : undefined}
+          >
+             {isImage ? (
+               <div className="relative group flex items-center justify-center">
+                 {/* eslint-disable-next-line @next/next/no-img-element */}
+                 <img 
+                   src={`data:${mimeType};base64,${content}`}
+                   alt={fileName}
+                   className="w-full h-auto max-w-full max-h-[70vh] rounded-lg shadow-2xl transition-transform hover:scale-105 duration-500 object-contain"
+                 />
+               </div>
+             ) : (
+               <pre className="whitespace-pre-wrap break-all selection:bg-primary/30">
+                  {content}
+               </pre>
+             )}
           </div>
           
           <div className="p-4 border-t border-border bg-card/50 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
@@ -85,7 +110,7 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold">Type:</span>
-                <span className="capitalize">{fileName.split('.').pop() || 'Text'}</span>
+                <span className="capitalize">{fileName.split('.').pop() || (isImage ? 'Image' : 'Text')}</span>
               </div>
             </div>
             
@@ -98,7 +123,7 @@ export const FileContentView: React.FC<FileContentViewProps> = ({
               </button>
               <button 
                 onClick={() => {
-                  const blob = new Blob([content], { type: 'text/plain' });
+                  const blob = new Blob([content], { type: isImage ? mimeType : 'text/plain' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
                   a.href = url;

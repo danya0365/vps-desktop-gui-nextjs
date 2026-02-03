@@ -39,6 +39,17 @@ export class MockFileRepository implements IFileRepository {
       return `#!/bin/bash\n\necho "Starting deployment..."\nnpm install\nnpm run build\npm2 restart all\necho "Deployment finished!"`;
     }
 
+    const ext = path.split('.').pop()?.toLowerCase();
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico'].includes(ext || '')) {
+      if (ext === 'svg') {
+        // Mock SVG base64 (a simple blue circle)
+        const svgContent = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="blue" /></svg>';
+        return Buffer.from(svgContent).toString('base64');
+      }
+      // Mock base64 for other images
+      return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    }
+
     return `// Content for ${path}\n// This is a mock file content.`;
   }
 }
