@@ -1,6 +1,6 @@
 "use client";
 
-import type { VpsServer } from "@/src/domain/entities/VpsServer";
+import type { ServerOS, VpsServer } from "@/src/domain/entities/VpsServer";
 import { mockVpsServerRepository } from "@/src/infrastructure/repositories/mock/MockVpsServerRepository";
 import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { IconButton } from "@/src/presentation/components/ui/IconButton";
@@ -16,6 +16,9 @@ export default function ServersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedServer, setSelectedServer] = useState<VpsServer | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingServer, setEditingServer] = useState<VpsServer | null>(null);
+  const [deletingServer, setDeletingServer] = useState<VpsServer | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -110,7 +113,7 @@ export default function ServersPage() {
           </select>
 
           {/* Add Server Button */}
-          <button className="btn-primary flex items-center gap-2">
+          <button onClick={() => setShowAddModal(true)} className="btn-primary flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
@@ -140,6 +143,72 @@ export default function ServersPage() {
         <ServerDetailModal
           server={selectedServer}
           onClose={() => setSelectedServer(null)}
+          onEdit={() => {
+            setEditingServer(selectedServer);
+            setSelectedServer(null);
+          }}
+          onDelete={() => {
+            setDeletingServer(selectedServer);
+            setSelectedServer(null);
+          }}
+        />
+      )}
+
+      {/* Add Server Modal */}
+      {showAddModal && (
+        <AddEditServerModal
+          onClose={() => setShowAddModal(false)}
+          onSave={(serverData) => {
+            const now = new Date().toISOString();
+            const newServer: VpsServer = {
+              id: `server-${Date.now()}`,
+              name: serverData.name || "New Server",
+              hostname: serverData.hostname || "new-server",
+              ipAddress: serverData.ipAddress || "0.0.0.0",
+              port: 22,
+              os: serverData.os || "ubuntu",
+              osVersion: serverData.osVersion || "22.04 LTS",
+              location: serverData.location || "Unknown",
+              provider: serverData.provider || "Unknown",
+              tags: serverData.tags || [],
+              status: "online",
+              cpu: { usage: 0, cores: 4 },
+              memory: { usage: 0, total: 16, used: 0 },
+              storage: { usage: 0, total: 100, used: 0 },
+              network: { inbound: 0, outbound: 0 },
+              uptime: 0,
+              lastUpdated: now,
+              createdAt: now,
+            };
+            setServers((prev) => [newServer, ...prev]);
+            setShowAddModal(false);
+          }}
+        />
+      )}
+
+      {/* Edit Server Modal */}
+      {editingServer && (
+        <AddEditServerModal
+          server={editingServer}
+          onClose={() => setEditingServer(null)}
+          onSave={(serverData) => {
+            setServers((prev) =>
+              prev.map((s) => (s.id === editingServer.id ? { ...s, ...serverData } : s))
+            );
+            setEditingServer(null);
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingServer && (
+        <DeleteConfirmModal
+          server={deletingServer}
+          onClose={() => setDeletingServer(null)}
+          onConfirm={() => {
+            setServers((prev) => prev.filter((s) => s.id !== deletingServer.id));
+            setDeletingServer(null);
+          }}
         />
       )}
     </div>
@@ -201,9 +270,13 @@ function ServerCard({
 function ServerDetailModal({
   server,
   onClose,
+  onEdit,
+  onDelete,
 }: {
   server: VpsServer;
   onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
   const modalSpring = useSpring({
     from: { opacity: 0, transform: "scale(0.95)" },
@@ -236,7 +309,8 @@ function ServerDetailModal({
             <div className="flex items-center justify-between">
               <StatusIndicator status={server.status} showLabel size="lg" />
               <div className="flex gap-2">
-                <button className="btn-secondary text-sm">Restart</button>
+                <button onClick={onEdit} className="btn-secondary text-sm">Edit</button>
+                <button onClick={onDelete} className="btn-secondary text-sm text-error">Delete</button>
                 <button className="btn-primary text-sm">Connect SSH</button>
               </div>
             </div>
@@ -403,3 +477,199 @@ function LoadingSkeleton() {
     </div>
   );
 }
+
+// Add/Edit Server Modal
+function AddEditServerModal({
+  server,
+  onClose,
+  onSave,
+}: {
+  server?: VpsServer;
+  onClose: () => void;
+  onSave: (data: Partial<VpsServer>) => void;
+}) {
+  const [formData, setFormData] = useState({
+    name: server?.name || "",
+    hostname: server?.hostname || "",
+    ipAddress: server?.ipAddress || "",
+    os: server?.os || "ubuntu",
+    osVersion: server?.osVersion || "22.04 LTS",
+    location: server?.location || "",
+    provider: server?.provider || "",
+    tags: server?.tags?.join(", ") || "",
+  });
+
+  const modalSpring = useSpring({
+    from: { opacity: 0, transform: "scale(0.95)" },
+    to: { opacity: 1, transform: "scale(1)" },
+  });
+
+  const handleSubmit = () => {
+    onSave({
+      ...formData,
+      tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <animated.div style={modalSpring} className="relative w-full max-w-lg">
+        <GlassCard className="p-6">
+          <h3 className="text-xl font-bold text-foreground mb-6">
+            {server ? "Edit Server" : "Add New Server"}
+          </h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Server Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                placeholder="e.g., Production Web Server"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Hostname</label>
+                <input
+                  type="text"
+                  value={formData.hostname}
+                  onChange={(e) => setFormData({ ...formData, hostname: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                  placeholder="e.g., web-prod-01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">IP Address</label>
+                <input
+                  type="text"
+                  value={formData.ipAddress}
+                  onChange={(e) => setFormData({ ...formData, ipAddress: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                  placeholder="e.g., 192.168.1.100"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">OS</label>
+                <select
+                  value={formData.os}
+                  onChange={(e) => setFormData({ ...formData, os: e.target.value as ServerOS })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                >
+                  <option value="ubuntu">Ubuntu</option>
+                  <option value="debian">Debian</option>
+                  <option value="centos">CentOS</option>
+                  <option value="windows">Windows</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">OS Version</label>
+                <input
+                  type="text"
+                  value={formData.osVersion}
+                  onChange={(e) => setFormData({ ...formData, osVersion: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                  placeholder="e.g., 22.04 LTS"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Location</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                  placeholder="e.g., Singapore"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Provider</label>
+                <input
+                  type="text"
+                  value={formData.provider}
+                  onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                  placeholder="e.g., DigitalOcean"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Tags (comma separated)</label>
+              <input
+                type="text"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                className="w-full px-4 py-2 rounded-xl bg-surface border border-border focus:border-primary focus:outline-none"
+                placeholder="e.g., production, web, nginx"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <button onClick={onClose} className="btn-secondary flex-1">
+              Cancel
+            </button>
+            <button onClick={handleSubmit} className="btn-primary flex-1">
+              {server ? "Save Changes" : "Add Server"}
+            </button>
+          </div>
+        </GlassCard>
+      </animated.div>
+    </div>
+  );
+}
+
+// Delete Confirmation Modal
+function DeleteConfirmModal({
+  server,
+  onClose,
+  onConfirm,
+}: {
+  server: VpsServer;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const modalSpring = useSpring({
+    from: { opacity: 0, transform: "scale(0.95)" },
+    to: { opacity: 1, transform: "scale(1)" },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <animated.div style={modalSpring} className="relative w-full max-w-md">
+        <GlassCard className="p-6 text-center">
+          <div className="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2">Delete Server?</h3>
+          <p className="text-muted mb-6">
+            Are you sure you want to delete <strong>{server.name}</strong>? This action cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button onClick={onClose} className="btn-secondary flex-1">
+              Cancel
+            </button>
+            <button onClick={onConfirm} className="btn-primary flex-1 !bg-error hover:!bg-error/90">
+              Delete Server
+            </button>
+          </div>
+        </GlassCard>
+      </animated.div>
+    </div>
+  );
+}
+

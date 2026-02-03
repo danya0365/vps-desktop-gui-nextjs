@@ -1,5 +1,6 @@
 "use client";
 
+import { NotificationCenter } from "@/src/presentation/components/ui/NotificationCenter";
 import { ThemeToggle } from "@/src/presentation/components/ui/ThemeToggle";
 import { animated, useSpring } from "@react-spring/web";
 import { useState } from "react";
@@ -48,6 +49,7 @@ export function MainHeader({ title = "VPS Desktop" }: MainHeaderProps) {
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
+        <NotificationCenter />
         <ThemeToggle />
       </div>
     </header>

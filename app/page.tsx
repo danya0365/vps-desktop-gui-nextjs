@@ -6,6 +6,7 @@ import { GlassCard } from "@/src/presentation/components/ui/GlassCard";
 import { StatusIndicator } from "@/src/presentation/components/ui/StatusIndicator";
 import { WindowPanel } from "@/src/presentation/components/ui/WindowPanel";
 import { animated, useSpring, useTrail } from "@react-spring/web";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
@@ -114,20 +115,20 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action) => (
-            <GlassCard
-              key={action.id}
-              onClick={() => console.log(`Clicked ${action.label}`)}
-              className="flex flex-col items-center gap-3 py-6 cursor-pointer"
-            >
-              <div
-                className={`w-14 h-14 rounded-2xl ${action.bgColor} flex items-center justify-center text-2xl`}
+            <Link key={action.id} href={action.href}>
+              <GlassCard
+                className="flex flex-col items-center gap-3 py-6 cursor-pointer h-full"
               >
-                {action.icon}
-              </div>
-              <span className="text-sm font-medium text-foreground">
-                {action.label}
-              </span>
-            </GlassCard>
+                <div
+                  className={`w-14 h-14 rounded-2xl ${action.bgColor} flex items-center justify-center text-2xl`}
+                >
+                  {action.icon}
+                </div>
+                <span className="text-sm font-medium text-foreground">
+                  {action.label}
+                </span>
+              </GlassCard>
+            </Link>
           ))}
         </div>
       </section>
@@ -157,10 +158,10 @@ export default function HomePage() {
 
 // Quick Actions Data
 const quickActions = [
-  { id: "new-server", label: "New Server", icon: "➕", bgColor: "bg-primary/10" },
-  { id: "terminal", label: "Terminal", icon: "💻", bgColor: "bg-secondary/10" },
-  { id: "monitoring", label: "Monitoring", icon: "📊", bgColor: "bg-success/10" },
-  { id: "settings", label: "Settings", icon: "⚙️", bgColor: "bg-gray-200 dark:bg-gray-700" },
+  { id: "servers", label: "Servers", icon: "🖥️", bgColor: "bg-primary/10", href: "/servers" },
+  { id: "terminal", label: "Terminal", icon: "💻", bgColor: "bg-secondary/10", href: "/terminal" },
+  { id: "monitoring", label: "Monitoring", icon: "📊", bgColor: "bg-success/10", href: "/monitoring" },
+  { id: "settings", label: "Settings", icon: "⚙️", bgColor: "bg-gray-200 dark:bg-gray-700", href: "/settings" },
 ];
 
 // Server Card Component
