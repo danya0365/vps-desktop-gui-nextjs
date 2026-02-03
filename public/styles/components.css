@@ -1,0 +1,164 @@
+@layer base {
+  /* Animation classes */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px 5px rgba(5, 150, 105, 0.2);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+
+  /* Islamic Geometric Pattern Background */
+  .islamic-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23059669' fill-opacity='0.04'%3E%3Cpath d='M40 0L0 40l40 40 40-40L40 0zm0 10l30 30-30 30-30-30 30-30z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .islamic-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%2310b981' fill-opacity='0.06'%3E%3Cpath d='M40 0L0 40l40 40 40-40L40 0zm0 10l30 30-30 30-30-30 30-30z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Star Pattern (Islamic 8-point star) */
+  .star-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%23C9A84C' fill-opacity='0.05'%3E%3Cpath d='M30 0l6.18 23.82L60 30l-23.82 6.18L30 60l-6.18-23.82L0 30l23.82-6.18z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .star-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%23E5C76B' fill-opacity='0.04'%3E%3Cpath d='M30 0l6.18 23.82L60 30l-23.82 6.18L30 60l-6.18-23.82L0 30l23.82-6.18z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Gradient backgrounds */
+  .bg-islamic-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 50%,
+      var(--color-surface-warm) 100%
+    );
+  }
+
+  .dark .bg-islamic-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-gray-900) 0%,
+      var(--color-background) 50%,
+      var(--color-surface) 100%
+    );
+  }
+
+  /* Gold gradient text */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold), var(--color-gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Emerald gradient text */
+  .text-emerald-gradient {
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary), var(--color-primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Card styles */
+  .card-glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .card-glass {
+    background: rgba(26, 31, 53, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Arabic text styling */
+  .arabic-text {
+    font-family: var(--font-arabic), serif;
+    direction: rtl;
+  }
+
+  /* Severity badges */
+  .badge-basic {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+  }
+
+  .badge-intermediate {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .badge-advanced {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  }
+}

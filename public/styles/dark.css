@@ -1,0 +1,79 @@
+/* Dark Mode - Islamic Night Theme */
+@layer base {
+  .dark {
+    /* Deep night blue - like the night sky over the desert */
+    --color-background: #0C1222;
+    --color-foreground: #F5F5F4;
+    --color-surface: #1A1F35;
+    --color-on-surface: #FFFFFF;
+    --color-surface-warm: #1E2438;
+
+    /* Primary - Lighter emerald for dark mode */
+    --color-primary: #10b981;
+    --color-primary-light: #34d399;
+    --color-primary-dark: #059669;
+
+    /* Secondary - Brighter gold for dark mode */
+    --color-secondary: #E5C76B;
+    --color-secondary-light: #F0D98A;
+    --color-secondary-dark: #C9A84C;
+    --color-gold: #E5C76B;
+    --color-gold-light: #F0D98A;
+    --color-gold-dark: #C9A84C;
+
+    /* Accent */
+    --color-accent: #3B82F6;
+    --color-accent-light: #60A5FA;
+    --color-accent-dark: #2563EB;
+
+    /* Status colors for dark mode */
+    --color-success: #34d399;
+    --color-success-light: #065f46;
+    --color-success-dark: #34d399;
+    --color-warning: #fbbf24;
+    --color-warning-light: #92400e;
+    --color-warning-dark: #fbbf24;
+    --color-error: #f87171;
+    --color-error-light: #991b1b;
+    --color-error-dark: #f87171;
+    --color-info: #60a5fa;
+    --color-info-light: #1e3a8a;
+    --color-info-dark: #60a5fa;
+
+    /* Severity Level Colors - Dark mode */
+    --color-basic: #34d399;
+    --color-intermediate: #fbbf24;
+    --color-advanced: #f87171;
+
+    /* UI Colors - Dark mode */
+    --color-muted: #9CA3AF;
+    --color-muted-light: #1E2438;
+    --color-muted-dark: #D1D5DB;
+    --color-border: #2D3348;
+    --color-border-light: #1E2438;
+    --color-border-dark: #4B5563;
+
+    /* Input colors (dark mode) */
+    --color-input: #2D3348;
+    --color-input-bg: #1A1F35;
+    --color-input-focus: #252B42;
+    --color-input-placeholder: #6B7280;
+    --color-input-border: #2D3348;
+
+    /* Gray scale - Dark mode */
+    --color-gray-50: #1A1F35;
+    --color-gray-100: #1E2438;
+    --color-gray-200: #252B42;
+    --color-gray-300: #2D3348;
+    --color-gray-400: #4B5563;
+    --color-gray-500: #6B7280;
+    --color-gray-600: #9CA3AF;
+    --color-gray-700: #D1D5DB;
+    --color-gray-800: #E5E7EB;
+    --color-gray-900: #F3F4F6;
+
+    /* Islamic Pattern Colors - Dark mode */
+    --color-pattern-primary: rgba(16, 185, 129, 0.08);
+    --color-pattern-secondary: rgba(229, 199, 107, 0.06);
+  }
+}

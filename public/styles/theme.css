@@ -1,0 +1,94 @@
+/* 🎨 Haqq Vault Theme - Islamic Design System */
+@theme {
+  /* Custom Font Variables */
+  --font-sans: "MiSans Thai", "MiSans Thai Variable", system-ui, -apple-system,
+    sans-serif;
+  --font-mono: "MiSans Thai", "MiSans Thai Variable", system-ui, -apple-system,
+    monospace;
+  --font-arabic: "Amiri", "Traditional Arabic", serif;
+
+  /* === ISLAMIC COLOR PALETTE === */
+  
+  /* Primary - Emerald (Green of Islam) */
+  --color-primary: #059669;
+  --color-primary-light: #10b981;
+  --color-primary-dark: #047857;
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+
+  /* Secondary - Gold (Wisdom & Prosperity) */
+  --color-secondary: #C9A84C;
+  --color-secondary-light: #E5C76B;
+  --color-secondary-dark: #A68A3A;
+  --color-gold: #C9A84C;
+  --color-gold-light: #E5C76B;
+  --color-gold-dark: #A68A3A;
+
+  /* Accent - Islamic Blue (Dome color) */
+  --color-accent: #1E40AF;
+  --color-accent-light: #3B82F6;
+  --color-accent-dark: #1E3A8A;
+
+  /* Light Mode - Ivory & Warm tones */
+  --color-background: #FFFBF5;
+  --color-foreground: #1C1917;
+  --color-surface: #FFFFFF;
+  --color-on-surface: #1C1917;
+  --color-surface-warm: #FEF7ED;
+
+  /* Status colors */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-success-dark: #047857;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #d97706;
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #dc2626;
+  --color-info: #3b82f6;
+  --color-info-light: #dbeafe;
+  --color-info-dark: #1d4ed8;
+
+  /* Severity Level Colors */
+  --color-basic: #10b981;      /* Green - Easy */
+  --color-intermediate: #f59e0b; /* Amber - Medium */
+  --color-advanced: #ef4444;   /* Red - Advanced */
+
+  /* UI Colors - Warm Gray scale */
+  --color-muted: #78716C;
+  --color-muted-light: #FAF9F7;
+  --color-muted-dark: #44403C;
+  --color-border: #E7E5E4;
+  --color-border-light: #F5F5F4;
+  --color-border-dark: #44403C;
+
+  /* Input colors */
+  --color-input: #D6D3D1;
+  --color-input-bg: #FFFFFF;
+  --color-input-focus: #FFFFFF;
+  --color-input-placeholder: #A8A29E;
+  --color-input-border: #D6D3D1;
+
+  /* Gray scale */
+  --color-gray-50: #FAFAF9;
+  --color-gray-100: #F5F5F4;
+  --color-gray-200: #E7E5E4;
+  --color-gray-300: #D6D3D1;
+  --color-gray-400: #A8A29E;
+  --color-gray-500: #78716C;
+  --color-gray-600: #57534E;
+  --color-gray-700: #44403C;
+  --color-gray-800: #292524;
+  --color-gray-900: #1C1917;
+
+  /* Islamic Pattern Colors */
+  --color-pattern-primary: rgba(5, 150, 105, 0.05);
+  --color-pattern-secondary: rgba(201, 168, 76, 0.08);
+}
