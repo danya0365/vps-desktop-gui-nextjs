@@ -12,7 +12,6 @@ import { FilesViewModel } from '@/src/presentation/presenters/files/FilesPresent
 import { useFilesPresenter } from '@/src/presentation/presenters/files/useFilesPresenter';
 import { animated, useSpring } from '@react-spring/web';
 import React from 'react';
-import { FileContentViewer } from './FileContentViewer';
 
 interface FilesViewProps {
   initialViewModel: FilesViewModel;
@@ -212,12 +211,14 @@ export const FilesView: React.FC<FilesViewProps> = ({ initialViewModel }) => {
                     <div className="flex flex-col gap-2 pt-4">
                       {selectedFile.type === 'file' && (
                         <>
-                          <button 
-                            onClick={() => actions.viewFileContent(selectedFile)}
-                            className="bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-md transform active:scale-95 shadow-primary/20"
+                          <a 
+                            href={`/files/view?serverId=${selectedServer?.id}&path=${encodeURIComponent(selectedFile.path)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-md transform active:scale-95 shadow-primary/20 text-center"
                           >
                             View Content
-                          </button>
+                          </a>
                           <button className="bg-muted hover:bg-muted/80 py-2.5 rounded-lg text-sm font-semibold transition-all transform active:scale-95 border border-border/50">
                             Download File
                           </button>
@@ -242,15 +243,6 @@ export const FilesView: React.FC<FilesViewProps> = ({ initialViewModel }) => {
           </div>
         </div>
       </animated.div>
-
-      {state.isContentViewerOpen && selectedFile && (
-        <FileContentViewer 
-          file={selectedFile}
-          content={state.fileContent}
-          loading={loading}
-          onClose={actions.closeContentViewer}
-        />
-      )}
     </div>
   );
 };
