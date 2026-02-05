@@ -8,17 +8,17 @@ import { IFileRepository } from '@/src/application/repositories/IFileRepository'
 import { FileItem } from '@/src/domain/entities/FileItem';
 import { Client } from 'ssh2';
 
-export class SshFileRepository implements IFileRepository {
-  private config = {
-    host: process.env.VPS_SSH_HOST || '',
-    port: parseInt(process.env.VPS_SSH_PORT || '22'),
-    username: process.env.VPS_SSH_USER || '',
-    password: process.env.VPS_SSH_PASS || '',
-  };
+import { SshConfigManager } from '../../config/SshConfigManager';
 
-  private async executeCommand(command: string): Promise<string> {
-    if (!this.config.host || !this.config.username) {
-      throw new Error('SSH credentials not configured');
+export class SshFileRepository implements IFileRepository {
+  private async executeCommand(serverId: string, command: string): Promise<string> {
+    const config = SshConfigManager.getConfig(serverId);
+    if (!config) {
+        throw new Error(`Server with ID ${serverId} not found in configuration`);
+    }
+
+    if (!config.host || !config.username) {
+      throw new Error(`SSH credentials not configured for server ${serverId}`);
     }
 
     return new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ export class SshFileRepository implements IFileRepository {
         .on('error', (err) => {
           reject(err);
         })
-        .connect(this.config);
+        .connect(config);
     });
   }
 
@@ -56,7 +56,7 @@ export class SshFileRepository implements IFileRepository {
       // Use ls -lA --time-style=long-iso for consistent output
       const cleanPath = path.replace(/[;&|]/g, ''); // Basic sanitize
       const command = `ls -lA --time-style=long-iso "${cleanPath}"`;
-      const output = await this.executeCommand(command);
+      const output = await this.executeCommand(serverId, command);
       
       return this.parseLsOutput(output, cleanPath);
     } catch (error) {
@@ -75,14 +75,14 @@ export class SshFileRepository implements IFileRepository {
         // Read file as base64 for images
         // We use -w 0 to prevent line wrapping which can break data URIs
         const command = `cat "${cleanPath}" | base64 -w 0 || cat "${cleanPath}" | base64`;
-        const output = await this.executeCommand(command);
+        const output = await this.executeCommand(serverId, command);
         // Remove any remaining newlines or spaces
         return output.replace(/\s/g, '');
       }
 
       // Use head to limit reading to first 1MB for text
       const command = `head -c 1048576 "${cleanPath}"`;
-      const output = await this.executeCommand(command);
+      const output = await this.executeCommand(serverId, command);
       return output;
     } catch (error) {
       console.error('Error fetching file content via SSH:', error);

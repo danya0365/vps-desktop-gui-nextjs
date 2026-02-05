@@ -5,24 +5,19 @@
  */
 
 import type {
-    CreateVpsServerData,
-    IVpsServerRepository,
-    PaginatedResult,
-    UpdateVpsServerData,
+  CreateVpsServerData,
+  IVpsServerRepository,
+  PaginatedResult,
+  UpdateVpsServerData,
 } from '@/src/application/repositories/IVpsServerRepository';
 import type { ServerOS, ServerStats, ServerStatus, VpsServer } from '@/src/domain/entities/VpsServer';
 import { Client } from 'ssh2';
 
-export class SshVpsServerRepository implements IVpsServerRepository {
-  private config = {
-    host: process.env.VPS_SSH_HOST || '',
-    port: parseInt(process.env.VPS_SSH_PORT || '22'),
-    username: process.env.VPS_SSH_USER || '',
-    password: process.env.VPS_SSH_PASS || '',
-  };
+import { SshConfig, SshConfigManager } from '../../config/SshConfigManager';
 
-  private async executeCommand(command: string): Promise<string> {
-    if (!this.config.host || !this.config.username) {
+export class SshVpsServerRepository implements IVpsServerRepository {
+  private async executeCommand(config: SshConfig, command: string): Promise<string> {
+    if (!config.host || !config.username) {
       throw new Error('SSH credentials not configured');
     }
 
@@ -52,7 +47,7 @@ export class SshVpsServerRepository implements IVpsServerRepository {
         .on('error', (err) => {
           reject(err);
         })
-        .connect(this.config);
+        .connect(config);
     });
   }
 
@@ -62,36 +57,65 @@ export class SshVpsServerRepository implements IVpsServerRepository {
   }
 
   async getAll(): Promise<VpsServer[]> {
-    try {
-      const command = `
-        echo "---OS---"
-        lsb_release -d 2>/dev/null | cut -f2 || cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2
-        echo "---CPU---"
-        lscpu | grep "Model name" | sed 's/Model name:[[:space:]]*//'
-        nproc
-        echo "---MEM---"
-        free -b
-        echo "---DISK---"
-        df -B1 / | tail -1 | awk '{print $2,$3}'
-        echo "---UPTIME---"
-        cat /proc/uptime | awk '{print $1}'
-        echo "---LOAD---"
-        cat /proc/loadavg
-        echo "---TRAFFIC---"
-        INTERFACE=$(ip -o -4 route show to default | head -1 | awk '{print $5}')
-        if [ -n "$INTERFACE" ]; then
-          grep "$INTERFACE" /proc/net/dev | awk '{print $2,$10}'
-        else
-          cat /proc/net/dev | grep -E "eth0|enp|eno" | head -1 | awk '{print $2,$10}'
-        fi
-      `;
+    const configs = SshConfigManager.getAllConfigs();
+    const serverPromises = configs.map(async (config) => {
+      try {
+        const command = `
+          echo "---OS---"
+          lsb_release -d 2>/dev/null | cut -f2 || cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2
+          echo "---CPU---"
+          lscpu | grep "Model name" | sed 's/Model name:[[:space:]]*//'
+          nproc
+          echo "---MEM---"
+          free -b
+          echo "---DISK---"
+          df -B1 / | tail -1 | awk '{print $2,$3}'
+          echo "---UPTIME---"
+          cat /proc/uptime | awk '{print $1}'
+          echo "---LOAD---"
+          cat /proc/loadavg
+          echo "---TRAFFIC---"
+          INTERFACE=$(ip -o -4 route show to default | head -1 | awk '{print $5}')
+          if [ -n "$INTERFACE" ]; then
+            grep "$INTERFACE" /proc/net/dev | awk '{print $2,$10}'
+          else
+            cat /proc/net/dev | grep -E "eth0|enp|eno" | head -1 | awk '{print $2,$10}'
+          fi
+        `;
 
-      const output = await this.executeCommand(command);
-      return [this.parseOutput(output)];
-    } catch (error) {
-      console.error('Error fetching SSH data:', error);
-      return [];
-    }
+        const output = await this.executeCommand(config, command);
+        return this.parseOutput(config, output);
+      } catch (error) {
+        console.error(`Error fetching SSH data for ${config.name}:`, error);
+        // Return a "offline" placeholder for this server
+        return this.getOfflinePlaceholder(config);
+      }
+    });
+
+    return Promise.all(serverPromises);
+  }
+
+  private getOfflinePlaceholder(config: SshConfig): VpsServer {
+    return {
+        id: config.id,
+        name: config.name,
+        hostname: config.host,
+        ipAddress: config.host,
+        port: config.port,
+        status: 'offline',
+        os: 'custom',
+        osVersion: 'Unknown',
+        cpu: { cores: 0, usage: 0 },
+        memory: { total: 0, used: 0, usage: 0 },
+        storage: { total: 0, used: 0, usage: 0 },
+        network: { inbound: 0, outbound: 0 },
+        uptime: 0,
+        location: 'Remote',
+        provider: 'Managed',
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        tags: ['remote', 'ssh'],
+    };
   }
 
   async getPaginated(page: number, perPage: number): Promise<PaginatedResult<VpsServer>> {
@@ -152,7 +176,7 @@ export class SshVpsServerRepository implements IVpsServerRepository {
     return server;
   }
 
-  private parseOutput(output: string): VpsServer {
+  private parseOutput(config: SshConfig, output: string): VpsServer {
     const sections: Record<string, string[]> = {};
     let currentSection = '';
 
@@ -193,11 +217,11 @@ export class SshVpsServerRepository implements IVpsServerRepository {
     const usedDiskGB = usedDiskBytes / (1024 * 1024 * 1024);
 
     return {
-      id: 'vps-remote',
-      name: 'Primary VPS (SSH)',
-      hostname: 'remote-vps',
-      ipAddress: this.config.host,
-      port: this.config.port,
+      id: config.id,
+      name: config.name,
+      hostname: config.host,
+      ipAddress: config.host,
+      port: config.port,
       status: 'online',
       os: this.detectOs(osFull),
       osVersion: osFull,

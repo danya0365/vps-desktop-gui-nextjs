@@ -8,17 +8,17 @@
 import { ITerminalRepository } from "@/src/application/repositories/ITerminalRepository";
 import { Client } from 'ssh2';
 
-export class SshTerminalRepository implements ITerminalRepository {
-  private config = {
-    host: process.env.VPS_SSH_HOST || '',
-    port: parseInt(process.env.VPS_SSH_PORT || '22'),
-    username: process.env.VPS_SSH_USER || '',
-    password: process.env.VPS_SSH_PASS || '',
-  };
+import { SshConfigManager } from "../../config/SshConfigManager";
 
-  private executeRawCommand(command: string): Promise<string> {
-    if (!this.config.host || !this.config.username) {
-      throw new Error('SSH credentials not configured');
+export class SshTerminalRepository implements ITerminalRepository {
+  private async executeRawCommand(serverId: string, command: string): Promise<string> {
+    const config = SshConfigManager.getConfig(serverId);
+    if (!config) {
+        throw new Error(`Server with ID ${serverId} not found in configuration`);
+    }
+
+    if (!config.host || !config.username) {
+      throw new Error(`SSH credentials not configured for server ${serverId}`);
     }
 
     return new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ export class SshTerminalRepository implements ITerminalRepository {
         .on('error', (err) => {
           reject(err);
         })
-        .connect(this.config);
+        .connect(config);
     });
   }
 
@@ -57,7 +57,7 @@ export class SshTerminalRepository implements ITerminalRepository {
     const separator = '___CWD_SEPARATOR___';
     const fullCommand = `cd "${cwd}" 2>/dev/null || cd /; ${command}; echo "${separator}"; pwd`;
 
-    const rawOutput = await this.executeRawCommand(fullCommand);
+    const rawOutput = await this.executeRawCommand(serverId, fullCommand);
     
     // Split the output to get the command result and the new cwd
     const parts = rawOutput.split(separator);
