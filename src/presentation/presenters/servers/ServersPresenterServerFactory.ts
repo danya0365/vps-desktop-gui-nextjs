@@ -10,12 +10,11 @@ import { ServersPresenter } from "./ServersPresenter";
 export class ServersPresenterServerFactory {
   static create(): ServersPresenter {
     const repoType = process.env.NEXT_PUBLIC_VPS_REPO_TYPE || 'mock';
-
-    if (repoType === 'ssh') {
-      return new ServersPresenter(new SshVpsServerRepository());
-    }
-
-    return new ServersPresenter(new MockVpsServerRepository());
+    const repository = repoType === 'ssh'
+      ? new SshVpsServerRepository()
+      : new MockVpsServerRepository();
+      
+    return new ServersPresenter(repository);
   }
 }
 

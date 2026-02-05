@@ -10,12 +10,11 @@ import { DashboardPresenter } from "./DashboardPresenter";
 export class DashboardPresenterServerFactory {
   static create(): DashboardPresenter {
     const repoType = process.env.NEXT_PUBLIC_VPS_REPO_TYPE || 'mock';
+    const repository = repoType === 'ssh'
+      ? new SshVpsServerRepository()
+      : new MockVpsServerRepository();
 
-    if (repoType === 'ssh') {
-      return new DashboardPresenter(new SshVpsServerRepository());
-    }
-
-    return new DashboardPresenter(new MockVpsServerRepository());
+    return new DashboardPresenter(repository);
   }
 }
 
